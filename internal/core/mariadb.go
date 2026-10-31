@@ -10,11 +10,12 @@ import (
 )
 
 type mariaDB struct {
-	dir     string // bin/mariadb
-	dataDir string
-	conf    string
-	port    int
-	proc    *process
+	dir      string // bin/mariadb
+	dataDir  string
+	conf     string
+	port     int
+	password string // root password, empty by default
+	proc     *process
 }
 
 func (m *mariaDB) binary(names ...string) string {
@@ -98,6 +99,7 @@ func (m *mariaDB) stop() {
 	}
 	if admin := m.binary("mariadb-admin.exe", "mysqladmin.exe"); admin != "" {
 		cmd := hiddenCmd(admin, "-uroot", "--host=127.0.0.1", "--port="+strconv.Itoa(m.port), "shutdown")
+		cmd.Env = append(os.Environ(), "MYSQL_PWD="+m.password)
 		_ = cmd.Run()
 		if m.proc.wait(15 * time.Second) {
 			return

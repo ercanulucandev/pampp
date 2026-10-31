@@ -10,6 +10,14 @@ export function ClearNodeLog(arg1, arg2) {
   return window['go']['main']['App']['ClearNodeLog'](arg1, arg2);
 }
 
+export function CreateDBUser(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['CreateDBUser'](arg1, arg2, arg3, arg4);
+}
+
+export function CreateDatabase(arg1) {
+  return window['go']['main']['App']['CreateDatabase'](arg1);
+}
+
 export function CreateNodeApp(arg1, arg2) {
   return window['go']['main']['App']['CreateNodeApp'](arg1, arg2);
 }
@@ -18,8 +26,36 @@ export function CreateSite(arg1, arg2) {
   return window['go']['main']['App']['CreateSite'](arg1, arg2);
 }
 
+export function DBOverview() {
+  return window['go']['main']['App']['DBOverview']();
+}
+
+export function DBRows(arg1, arg2) {
+  return window['go']['main']['App']['DBRows'](arg1, arg2);
+}
+
+export function DBTables(arg1) {
+  return window['go']['main']['App']['DBTables'](arg1);
+}
+
+export function DBUsers() {
+  return window['go']['main']['App']['DBUsers']();
+}
+
 export function DismissTask(arg1) {
   return window['go']['main']['App']['DismissTask'](arg1);
+}
+
+export function DropDBUser(arg1, arg2) {
+  return window['go']['main']['App']['DropDBUser'](arg1, arg2);
+}
+
+export function DropDatabase(arg1) {
+  return window['go']['main']['App']['DropDatabase'](arg1);
+}
+
+export function ExportDatabase(arg1) {
+  return window['go']['main']['App']['ExportDatabase'](arg1);
 }
 
 export function GetCatalog(arg1) {
@@ -40,6 +76,10 @@ export function GetNodeTemplates() {
 
 export function GetState() {
   return window['go']['main']['App']['GetState']();
+}
+
+export function ImportSQL(arg1) {
+  return window['go']['main']['App']['ImportSQL'](arg1);
 }
 
 export function Install(arg1, arg2) {
@@ -98,6 +138,10 @@ export function RestartService(arg1) {
   return window['go']['main']['App']['RestartService'](arg1);
 }
 
+export function RunSQL(arg1, arg2) {
+  return window['go']['main']['App']['RunSQL'](arg1, arg2);
+}
+
 export function RunScript(arg1, arg2) {
   return window['go']['main']['App']['RunScript'](arg1, arg2);
 }
@@ -110,6 +154,10 @@ export function SetAppNode(arg1, arg2) {
   return window['go']['main']['App']['SetAppNode'](arg1, arg2);
 }
 
+export function SetDBUserPassword(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SetDBUserPassword'](arg1, arg2, arg3);
+}
+
 export function SetDefaultNode(arg1) {
   return window['go']['main']['App']['SetDefaultNode'](arg1);
 }
@@ -120,6 +168,10 @@ export function SetDefaultPHP(arg1) {
 
 export function SetExtension(arg1, arg2, arg3) {
   return window['go']['main']['App']['SetExtension'](arg1, arg2, arg3);
+}
+
+export function SetRootPassword(arg1) {
+  return window['go']['main']['App']['SetRootPassword'](arg1);
 }
 
 export function SetSitePHP(arg1, arg2) {
@@ -144,6 +196,10 @@ export function StopScript(arg1, arg2) {
 
 export function StopService(arg1) {
   return window['go']['main']['App']['StopService'](arg1);
+}
+
+export function TableAction(arg1, arg2, arg3) {
+  return window['go']['main']['App']['TableAction'](arg1, arg2, arg3);
 }
 
 export function TrustCA() {

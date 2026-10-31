@@ -128,6 +128,7 @@ export namespace core {
 	    ssl: boolean;
 	    httpsPort: number;
 	    dbPort: number;
+	    dbPassword: string;
 	    tld: string;
 	    defaultPhp: string;
 	    phpWorkers: number;
@@ -148,6 +149,7 @@ export namespace core {
 	        this.ssl = source["ssl"];
 	        this.httpsPort = source["httpsPort"];
 	        this.dbPort = source["dbPort"];
+	        this.dbPassword = source["dbPassword"];
 	        this.tld = source["tld"];
 	        this.defaultPhp = source["defaultPhp"];
 	        this.phpWorkers = source["phpWorkers"];
@@ -175,6 +177,82 @@ export namespace core {
 		    }
 		    return a;
 		}
+	}
+	export class DBInfo {
+	    name: string;
+	    tables: number;
+	    size: number;
+	    system: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new DBInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.tables = source["tables"];
+	        this.size = source["size"];
+	        this.system = source["system"];
+	    }
+	}
+	export class DBOverview {
+	    version: string;
+	    host: string;
+	    port: number;
+	    user: string;
+	    password: string;
+	    databases: DBInfo[];
+	
+	    static createFrom(source: any = {}) {
+	        return new DBOverview(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.version = source["version"];
+	        this.host = source["host"];
+	        this.port = source["port"];
+	        this.user = source["user"];
+	        this.password = source["password"];
+	        this.databases = this.convertValues(source["databases"], DBInfo);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class DBUser {
+	    user: string;
+	    host: string;
+	    grants: string[];
+	    root: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new DBUser(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.user = source["user"];
+	        this.host = source["host"];
+	        this.grants = source["grants"];
+	        this.root = source["root"];
+	    }
 	}
 	export class LogFile {
 	    name: string;
@@ -368,6 +446,28 @@ export namespace core {
 	        this.sites = source["sites"];
 	    }
 	}
+	export class QueryResult {
+	    columns: string[];
+	    rows: string[][];
+	    affected: number;
+	    truncated: boolean;
+	    millis: number;
+	    isQuery: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new QueryResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.columns = source["columns"];
+	        this.rows = source["rows"];
+	        this.affected = source["affected"];
+	        this.truncated = source["truncated"];
+	        this.millis = source["millis"];
+	        this.isQuery = source["isQuery"];
+	    }
+	}
 	
 	export class SSLState {
 	    enabled: boolean;
@@ -513,6 +613,28 @@ export namespace core {
 		    }
 		    return a;
 		}
+	}
+	export class TableInfo {
+	    name: string;
+	    engine: string;
+	    rows: number;
+	    size: number;
+	    collation: string;
+	    kind: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TableInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.engine = source["engine"];
+	        this.rows = source["rows"];
+	        this.size = source["size"];
+	        this.collation = source["collation"];
+	        this.kind = source["kind"];
+	    }
 	}
 
 }

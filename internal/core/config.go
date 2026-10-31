@@ -19,6 +19,7 @@ type Config struct {
 	SSL         bool                      `json:"ssl"`
 	HTTPSPort   int                       `json:"httpsPort"`
 	DBPort      int                       `json:"dbPort"`
+	DBPassword  string                    `json:"dbPassword"` // MariaDB root password (local dev only)
 	TLD         string                    `json:"tld"`
 	DefaultPHP  string                    `json:"defaultPhp"`
 	PHPWorkers  int                       `json:"phpWorkers"`

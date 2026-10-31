@@ -4,11 +4,13 @@ go 1.26.0
 
 require (
 	github.com/energye/systray v1.0.3
+	github.com/go-sql-driver/mysql v1.10.1
 	github.com/wailsapp/wails/v2 v2.17.0
 	golang.org/x/sys v0.49.0
 )
 
 require (
+	filippo.io/edwards25519 v1.2.0 // indirect
 	git.sr.ht/~jackmordaunt/go-toast/v2 v2.0.3 // indirect
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.16 // indirect

@@ -10,6 +10,7 @@ export const store = reactive({
   toasts: [],
   busy: {},
   nodeLogs: {}, // "app/script" -> lines, streamed from the backend
+  openStartAfterTrust: false,
 })
 
 // loadNodeLog fetches the buffered output of a run once; live lines then arrive via events.
@@ -77,8 +78,13 @@ export function init() {
     if (t.done && !(prev && prev.done)) {
       t.error ? toast(t.error, 'error') : toast(t.label, 'success')
       // First-run setup finished: greet the user with the start page.
+      // If the certificate is not trusted yet, the trust prompt comes first and opens the page after.
       if (!t.error && t.label === 'Kurulum tamamlandı') {
-        refresh().then(() => store.state?.startUrl && Api.OpenURL(store.state.startUrl))
+        refresh().then(() => {
+          const ssl = store.state?.ssl
+          if (ssl?.enabled && !ssl.trusted) store.openStartAfterTrust = true
+          else if (store.state?.startUrl) Api.OpenURL(store.state.startUrl)
+        })
       }
     }
   })

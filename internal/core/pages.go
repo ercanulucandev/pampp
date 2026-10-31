@@ -49,6 +49,7 @@ func (m *Manager) writeStartPage(cfg Config, wc webConfig) error {
 		"Trusted":   trusted,
 		"TLD":       cfg.TLD,
 		"DBPort":    cfg.DBPort,
+		"DBPassSet": cfg.DBPassword != "",
 		"Root":      m.P.Root,
 	}
 	var sites []startSite
@@ -72,6 +73,11 @@ func (m *Manager) writeStartPage(cfg Config, wc webConfig) error {
 }
 
 // siteWelcomePage is the index.php placed in a newly created site.
-func siteWelcomePage(name string, dbPort int) string {
-	return strings.NewReplacer("{{SITE}}", name, "{{DBPORT}}", strconv.Itoa(dbPort)).Replace(siteTemplate)
+func siteWelcomePage(name string, dbPort int, dbPassword string) string {
+	return strings.NewReplacer("{{SITE}}", name, "{{DBPORT}}", strconv.Itoa(dbPort), "{{DBPASS}}", phpString(dbPassword)).Replace(siteTemplate)
+}
+
+// phpString escapes s for use inside a single-quoted PHP string literal.
+func phpString(s string) string {
+	return strings.NewReplacer(`\`, `\\`, `'`, `\'`).Replace(s)
 }

@@ -38,8 +38,16 @@ XAMPP, Laragon, MAMP gibi araçlar ya ağır ya da esnek değil. PAMPP **~14 MB'
 - **Node sürümleri:** LTS ve Current sürümleri kur, proje başına Node sürümü seç.
 - **Proje şablonları:** React / Vue / Svelte + Vite, Next.js, Express API veya boş proje. Oluşturulur ve paketleri otomatik kurulur.
 
+### Veritabanı
+- **Bağlantı bilgileri:** Tek tıkla kopyalanır; Laravel için hazır `.env` örneği de var.
+- **Root şifresi:** Değiştirilir; PAMPP ve phpMyAdmin otomatik güncellenir.
+- **Veritabanları:** Boyut ve tablo sayısıyla listelenir; oluşturulur, silinir. Tablolar ve tablo verisi görüntülenir; tablolar boşaltılır veya silinir.
+- **Kullanıcılar:** Oluştur (güçlü şifre üretici ile), sadece belirli bir veritabanına yetki ver, şifre değiştir, sil.
+- **Yedek ve içe aktarma:** Tek tıkla `.sql` yedek alınır (`data/backups`), `.sql` dosyası istenen veritabanına yüklenir.
+- **SQL konsolu:** Sorgu çalıştır, sonuçları tablo olarak gör (Ctrl + Enter).
+
 ### Genel
-- **Yerel SSL:** PAMPP kendi sertifika otoritesini oluşturur. Tüm siteler `https://` ile kilit simgesiyle açılır. Sertifikalar otomatik yenilenir; güven onayı tek tık, yönetici yetkisi gerekmez.
+- **Yerel SSL:** PAMPP kendi sertifika otoritesini oluşturur. Tüm siteler `https://` ile kilit simgesiyle açılır. Sertifikalar otomatik yenilenir. Kurulumdan sonra PAMPP sertifikaya güvenmeyi adım adım anlatan bir pencere açar; tek tık yeter, yönetici yetkisi gerekmez.
 - **Tek tıkla güncelleme:** PHP, Node.js, Nginx, Apache, MariaDB, phpMyAdmin ve Composer resmi kaynaklardan kurulur ve güncellenir; ayarlar korunur.
 - **Başlangıç sayfası:** `https://localhost` adresinde siteler, sürümler, veritabanı bilgileri ve ilk adımlar.
 - **hosts dosyası:** Otomatik güncellenir (yalnızca o adımda UAC onayı istenir). `.localhost` uzantısı seçilirse hosts dosyasına hiç dokunulmaz.
@@ -102,6 +110,7 @@ PAMPP_E2E_ROOT=/tmp/pampp-e2e PAMPP_E2E_NEXT=1 go test ./internal/core -run Test
 
 - `internal/core/manager.go`: Durum, servis orkestrasyonu, kurulumlar
 - `internal/core/php.go`: php-cgi havuzu, php.ini ve eklentiler
+- `internal/core/db.go`: Veritabanı yönetimi (veritabanları, tablolar, kullanıcılar, yedek, SQL)
 - `internal/core/node.go`: Node.js sürümleri, proje algılama, script çalıştırıcı, şablonlar
 - `internal/core/webserver.go`: Nginx/Apache config üretimi ve süreç kontrolü
 - `internal/core/ssl.go`: Yerel CA, site sertifikaları, Windows güven deposu
@@ -109,7 +118,7 @@ PAMPP_E2E_ROOT=/tmp/pampp-e2e PAMPP_E2E_NEXT=1 go test ./internal/core -run Test
 - `internal/core/paths.go`: Portable / kurulu mod ve veri klasörü
 - `internal/core/mariadb.go`, `hosts.go`, `catalog.go` (sürüm kaynakları), `download.go`
 - `app.go`: Frontend'e açılan metotlar · `tray.go`: Sistem tepsisi
-- `frontend/src/views`: Panel, Siteler, PHP, Node.js, Bileşenler, Loglar, Ayarlar
+- `frontend/src/views`: Panel, Siteler, PHP, Node.js, Veritabanı, Bileşenler, Loglar, Ayarlar
 - `build/windows/installer/project.nsi`: NSIS installer
 
 ## Lisans

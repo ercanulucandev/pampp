@@ -107,6 +107,38 @@ func (a *App) SetDefaultNode(branch string) error        { return a.m.SetDefault
 func (a *App) RemoveNode(branch string) error            { return a.m.RemoveNode(branch) }
 func (a *App) OpenInEditor(path string) error            { return a.m.OpenInEditor(path) }
 
+// ---- database ----
+
+func (a *App) DBOverview() (*core.DBOverview, error)              { return a.m.DBOverview() }
+func (a *App) DBTables(db string) ([]core.TableInfo, error)       { return a.m.DBTables(db) }
+func (a *App) DBRows(db, table string) (*core.QueryResult, error) { return a.m.DBRows(db, table) }
+func (a *App) CreateDatabase(name string) error                   { return a.m.CreateDatabase(name) }
+func (a *App) DropDatabase(name string) error                     { return a.m.DropDatabase(name) }
+func (a *App) TableAction(db, table, action string) error         { return a.m.TableAction(db, table, action) }
+func (a *App) RunSQL(db, query string) (*core.QueryResult, error) { return a.m.RunSQL(db, query) }
+func (a *App) DBUsers() ([]core.DBUser, error)                    { return a.m.DBUsers() }
+func (a *App) CreateDBUser(user, host, password, db string) error {
+	return a.m.CreateDBUser(user, host, password, db)
+}
+func (a *App) SetDBUserPassword(user, host, password string) error {
+	return a.m.SetDBUserPassword(user, host, password)
+}
+func (a *App) DropDBUser(user, host string) error       { return a.m.DropDBUser(user, host) }
+func (a *App) SetRootPassword(password string) error    { return a.m.SetRootPassword(password) }
+func (a *App) ExportDatabase(db string) (string, error) { return a.m.ExportDatabase(db) }
+
+// ImportSQL asks for a .sql file and imports it into db. Returns "" when cancelled.
+func (a *App) ImportSQL(db string) (string, error) {
+	file, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title:   db + " veritabanına içe aktarılacak SQL dosyası",
+		Filters: []runtime.FileFilter{{DisplayName: "SQL dosyası (*.sql)", Pattern: "*.sql"}},
+	})
+	if err != nil || file == "" {
+		return "", err
+	}
+	return a.m.ImportSQL(db, file)
+}
+
 // ---- installs ----
 
 func (a *App) Install(component, branch string) string { return a.m.Install(component, branch) }

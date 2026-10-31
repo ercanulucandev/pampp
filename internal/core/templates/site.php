@@ -5,7 +5,7 @@ $host = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? $site);
 $db = null;
 if (function_exists('mysqli_connect')) {
     mysqli_report(MYSQLI_REPORT_OFF);
-    $conn = @mysqli_connect('127.0.0.1', 'root', '', '', {{DBPORT}});
+    $conn = @mysqli_connect('127.0.0.1', 'root', '{{DBPASS}}', '', {{DBPORT}});
     if ($conn) { $db = mysqli_get_server_info($conn); mysqli_close($conn); }
 }
 $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';

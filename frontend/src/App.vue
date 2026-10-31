@@ -7,6 +7,7 @@ import Dashboard from './views/Dashboard.vue'
 import Sites from './views/Sites.vue'
 import Php from './views/Php.vue'
 import Node from './views/Node.vue'
+import Database from './views/Database.vue'
 import Components from './views/Components.vue'
 import Logs from './views/Logs.vue'
 import Settings from './views/Settings.vue'
@@ -17,6 +18,7 @@ const nav = [
   { id: 'sites', label: 'Siteler', icon: 'globe', comp: Sites },
   { id: 'php', label: 'PHP', icon: 'code', comp: Php },
   { id: 'node', label: 'Node.js', icon: 'hexagon', comp: Node },
+  { id: 'database', label: 'Veritabanı', icon: 'database', comp: Database },
   { id: 'components', label: 'Bileşenler', icon: 'package', comp: Components },
   { id: 'logs', label: 'Loglar', icon: 'logs', comp: Logs },
   { id: 'settings', label: 'Ayarlar', icon: 'settings', comp: Settings },
@@ -27,6 +29,21 @@ const services = computed(() => store.state?.services || [])
 const anyRunning = computed(() => services.value.some(s => s.running))
 const allRunning = computed(() => services.value.filter(s => s.installed).every(s => s.running) && services.value.some(s => s.installed))
 const tasks = computed(() => Object.values(store.tasks))
+
+// HTTPS trust prompt: shown once the local CA exists but Windows does not trust it yet.
+// "Daha sonra" hides it until the next launch.
+const trustLater = ref(false)
+const showTrust = computed(() => {
+  const ssl = store.state?.ssl
+  return ssl && ssl.enabled && ssl.caExists && !ssl.trusted && !trustLater.value
+})
+async function trustNow() {
+  await call('trust', () => Api.TrustCA(), 'Sertifika artık güvenilir 🔒 Tarayıcını yeniden başlatman gerekebilir.')
+  if (store.openStartAfterTrust && store.state?.ssl.trusted) {
+    store.openStartAfterTrust = false
+    Api.OpenURL(store.state.startUrl)
+  }
+}
 
 function toggleAll() {
   if (anyRunning.value) call('all', () => Api.StopAll(), 'Servisler durduruldu')
@@ -86,6 +103,32 @@ function toggleAll() {
       </div>
     </div>
 
+    <Transition name="fade">
+      <div class="trust-overlay" v-if="showTrust">
+        <div class="card trust">
+          <div class="trust-icon"><Icon name="shield" :size="30" /></div>
+          <h2>HTTPS için son bir adım</h2>
+          <p class="muted">
+            PAMPP sitelerin için kendi yerel sertifika otoritesini oluşturdu. Tarayıcının
+            <span class="mono">https://</span> adreslerini kilit simgesiyle, uyarısız açması için bu sertifikaya bir kez güvenmen gerekiyor.
+          </p>
+          <ol class="steps">
+            <li><b>Güvenilir yap</b>'a tıkla.</li>
+            <li>Windows bir <b>Güvenlik Uyarısı</b> gösterecek ("PAMPP Local CA" sertifikasını yüklemek istiyor musunuz?).</li>
+            <li><b>Evet</b>'e tıkla. Yönetici yetkisi gerekmez; sertifika sadece senin kullanıcı hesabına eklenir.</li>
+          </ol>
+          <p class="muted small">Sonradan Ayarlar → SSL bölümünden kaldırabilirsin. Açık olan tarayıcıyı yeniden başlatman gerekebilir.</p>
+          <div class="row trust-foot">
+            <button class="btn ghost" @click="trustLater = true">Daha sonra</button>
+            <span class="spacer"></span>
+            <button class="btn primary lg" :disabled="store.busy.trust" @click="trustNow">
+              <Icon :name="store.busy.trust ? 'refresh' : 'lock'" :size="16" :class="{ spin: store.busy.trust }" /> Güvenilir yap
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <div class="toasts">
       <TransitionGroup name="toast">
         <div v-for="t in store.toasts" :key="t.id" class="toast" :class="t.kind">
@@ -138,6 +181,21 @@ nav { display: flex; flex-direction: column; gap: 2px; }
 }
 .toast.error { background: var(--red); color: #fff; }
 .toast.success { background: var(--green); color: #fff; }
+.trust-overlay { position: fixed; inset: 0; z-index: 28; display: grid; place-items: center; padding: 20px;
+  background: rgba(10, 12, 18, .5); backdrop-filter: blur(4px); }
+.trust { width: 100%; max-width: 500px; padding: 28px; display: flex; flex-direction: column; gap: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .35); animation: pop .22s ease-out; }
+.trust h2 { font-size: 20px; }
+.trust p { line-height: 1.55; }
+.trust-icon { width: 60px; height: 60px; border-radius: 16px; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 0 0 8px var(--green-soft); margin-bottom: 6px; }
+.steps { margin: 0; padding: 12px 14px 12px 32px; border-radius: 12px; background: var(--panel-2); line-height: 1.6; font-size: 13.5px; }
+.steps li { margin: 3px 0; }
+.trust-foot { margin-top: 6px; }
+.btn.lg { height: 40px; padding: 0 18px; }
+@keyframes pop { from { transform: scale(.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.fade-enter-active, .fade-leave-active { transition: opacity .18s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 .toast-enter-active, .toast-leave-active { transition: all .2s; }
 .toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(-8px); }
 </style>

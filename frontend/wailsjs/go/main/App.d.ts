@@ -6,11 +6,29 @@ export function ClearLog(arg1:string):Promise<void>;
 
 export function ClearNodeLog(arg1:string,arg2:string):Promise<void>;
 
+export function CreateDBUser(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+
+export function CreateDatabase(arg1:string):Promise<void>;
+
 export function CreateNodeApp(arg1:string,arg2:string):Promise<void>;
 
 export function CreateSite(arg1:string,arg2:string):Promise<core.SiteState>;
 
+export function DBOverview():Promise<core.DBOverview>;
+
+export function DBRows(arg1:string,arg2:string):Promise<core.QueryResult>;
+
+export function DBTables(arg1:string):Promise<Array<core.TableInfo>>;
+
+export function DBUsers():Promise<Array<core.DBUser>>;
+
 export function DismissTask(arg1:string):Promise<void>;
+
+export function DropDBUser(arg1:string,arg2:string):Promise<void>;
+
+export function DropDatabase(arg1:string):Promise<void>;
+
+export function ExportDatabase(arg1:string):Promise<string>;
 
 export function GetCatalog(arg1:boolean):Promise<core.Catalog>;
 
@@ -21,6 +39,8 @@ export function GetLogs():Promise<Array<core.LogFile>>;
 export function GetNodeTemplates():Promise<Array<core.NodeTemplate>>;
 
 export function GetState():Promise<core.State>;
+
+export function ImportSQL(arg1:string):Promise<string>;
 
 export function Install(arg1:string,arg2:string):Promise<string>;
 
@@ -50,17 +70,23 @@ export function RestartPHP(arg1:string):Promise<void>;
 
 export function RestartService(arg1:string):Promise<void>;
 
+export function RunSQL(arg1:string,arg2:string):Promise<core.QueryResult>;
+
 export function RunScript(arg1:string,arg2:string):Promise<void>;
 
 export function SaveSettings(arg1:core.Config):Promise<void>;
 
 export function SetAppNode(arg1:string,arg2:string):Promise<void>;
 
+export function SetDBUserPassword(arg1:string,arg2:string,arg3:string):Promise<void>;
+
 export function SetDefaultNode(arg1:string):Promise<void>;
 
 export function SetDefaultPHP(arg1:string):Promise<void>;
 
 export function SetExtension(arg1:string,arg2:string,arg3:boolean):Promise<void>;
+
+export function SetRootPassword(arg1:string):Promise<void>;
 
 export function SetSitePHP(arg1:string,arg2:string):Promise<void>;
 
@@ -73,6 +99,8 @@ export function StopAll():Promise<void>;
 export function StopScript(arg1:string,arg2:string):Promise<void>;
 
 export function StopService(arg1:string):Promise<void>;
+
+export function TableAction(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function TrustCA():Promise<void>;
 

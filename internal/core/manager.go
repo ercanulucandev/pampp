@@ -421,7 +421,7 @@ func (m *Manager) startDB() error {
 		return fmt.Errorf("MariaDB kurulu değil, Bileşenler sayfasından kurun")
 	}
 	cfg := m.config()
-	db := &mariaDB{dir: m.P.Bin("mariadb"), dataDir: m.P.Data("mariadb"), conf: m.P.Etc("mariadb", "my.ini"), port: cfg.DBPort}
+	db := &mariaDB{dir: m.P.Bin("mariadb"), dataDir: m.P.Data("mariadb"), conf: m.P.Etc("mariadb", "my.ini"), port: cfg.DBPort, password: cfg.DBPassword}
 	if err := db.writeConfig(m.P.Logs()); err != nil {
 		return err
 	}
@@ -726,7 +726,7 @@ func (m *Manager) CreateSite(name, php string) (*SiteState, error) {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return nil, err
 	}
-	if err := os.WriteFile(filepath.Join(dir, "index.php"), []byte(siteWelcomePage(name, m.config().DBPort)), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "index.php"), []byte(siteWelcomePage(name, m.config().DBPort, m.config().DBPassword)), 0o644); err != nil {
 		return nil, err
 	}
 	m.opMu.Lock()
@@ -806,7 +806,7 @@ func (m *Manager) SaveSettings(next Config) error {
 		m.opMu.Unlock()
 	}
 	if prev.DBPort != cfg.DBPort && m.componentInstalled("phpmyadmin") {
-		_ = writePMAConfig(m.P.Bin("phpmyadmin"), cfg.DBPort)
+		_ = writePMAConfig(m.P.Bin("phpmyadmin"), cfg.DBPort, cfg.DBPassword)
 	}
 	if m.dbRunning() && prev.DBPort != cfg.DBPort {
 		m.StopService("db")
@@ -1229,7 +1229,7 @@ func (m *Manager) install(t *Task, component, branch string) error {
 			return err
 		}
 		writeVersionFile(dir, rel.Version)
-		if err := writePMAConfig(dir, cfg.DBPort); err != nil {
+		if err := writePMAConfig(dir, cfg.DBPort, cfg.DBPassword); err != nil {
 			return err
 		}
 		// phpMyAdmin 5.2 officially supports PHP < 8.4; pick a compatible installed branch if any.
@@ -1259,7 +1259,7 @@ func (m *Manager) ensureCABundle() string {
 	return path
 }
 
-func writePMAConfig(dir string, port int) error {
+func writePMAConfig(dir string, port int, password string) error {
 	secret := make([]byte, 16)
 	rand.Read(secret)
 	os.MkdirAll(filepath.Join(dir, "tmp"), 0o755)
@@ -1271,7 +1271,7 @@ $cfg['Servers'][$i]['auth_type'] = 'config';
 $cfg['Servers'][$i]['host'] = '127.0.0.1';
 $cfg['Servers'][$i]['port'] = '%d';
 $cfg['Servers'][$i]['user'] = 'root';
-$cfg['Servers'][$i]['password'] = '';
+$cfg['Servers'][$i]['password'] = '%s';
 $cfg['Servers'][$i]['AllowNoPassword'] = true;
 $cfg['TempDir'] = __DIR__ . '/tmp';
 $cfg['UploadDir'] = '';
@@ -1279,7 +1279,7 @@ $cfg['SaveDir'] = '';
 $cfg['DefaultLang'] = 'tr';
 $cfg['ThemeDefault'] = 'pmahomme';
 $cfg['VersionCheck'] = false;
-`, hex.EncodeToString(secret), port)
+`, hex.EncodeToString(secret), port, phpString(password))
 	return os.WriteFile(filepath.Join(dir, "config.inc.php"), []byte(conf), 0o644)
 }
 

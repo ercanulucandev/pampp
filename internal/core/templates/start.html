@@ -71,7 +71,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:28px}
         <h2>🗄️ Veritabanı</h2>
         <div class="kv"><span>Sunucu</span><code>127.0.0.1:{{.DBPort}}</code></div>
         <div class="kv"><span>Kullanıcı</span><code>root</code></div>
-        <div class="kv"><span>Şifre</span><span>(boş)</span></div>
+        <div class="kv"><span>Şifre</span><span>{{if .DBPassSet}}PAMPP → Veritabanı sayfasında{{else}}(boş){{end}}</span></div>
         {{if .PMA}}<div class="kv"><span>Yönetim</span><a href="{{.PMA}}">phpMyAdmin →</a></div>{{end}}
       </div>
     </div>
