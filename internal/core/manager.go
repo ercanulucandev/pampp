@@ -961,10 +961,8 @@ func (m *Manager) OpenTerminal(dir string) error {
 		extra = append(extra, m.P.Bin("node", m.defaultNode(cfg, nodes)))
 	}
 	extra = append(extra, m.P.Bin("composer"), m.P.Bin("mariadb", "bin"))
-	cmd := detachedCmd("cmd.exe", "/K", "title PAMPP && echo PAMPP terminali - php, node, composer ve mariadb PATH'te.")
-	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "PATH="+strings.Join(extra, ";")+";"+os.Getenv("PATH"))
-	return cmd.Start()
+	env := append(os.Environ(), "PATH="+strings.Join(extra, ";")+";"+os.Getenv("PATH"))
+	return openConsole(dir, env, "PAMPP", "PAMPP terminali - php, node, composer ve mariadb hazir.")
 }
 
 // ---------------- installs ----------------

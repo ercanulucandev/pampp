@@ -49,10 +49,21 @@ func hiddenCmd(exe string, args ...string) *exec.Cmd {
 }
 
 // detachedCmd builds a command that survives PAMPP exiting (terminals, editors).
-func detachedCmd(exe string, args ...string) *exec.Cmd {
-	cmd := exec.Command(exe, args...)
-	cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: createNewConsole | createBreakawayFromJob}
-	return cmd
+// openConsole opens an interactive cmd window in dir that survives PAMPP exiting.
+//
+// Go always hands child processes explicit std handles (NUL when unset), so a
+// directly spawned `cmd /K` reads EOF from stdin and closes at once. `start` gives
+// the new window its own console input instead. banner must not contain quotes.
+func openConsole(dir string, env []string, title, banner string) error {
+	cmd := exec.Command("cmd.exe")
+	cmd.Dir = dir
+	cmd.Env = env
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow:    true,
+		CreationFlags: createNoWindow | createBreakawayFromJob,
+		CmdLine:       fmt.Sprintf(`cmd.exe /d /c start "%s" cmd.exe /k "echo %s"`, title, banner),
+	}
+	return cmd.Run()
 }
 
 func killTree(pid int) {

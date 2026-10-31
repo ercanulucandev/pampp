@@ -12,8 +12,8 @@
   },
   "info": {
     "productName": "PAMPP",
-    "productVersion": "1.1.0",
+    "productVersion": "1.1.1",
     "copyright": "PAMPP",
-    "comments": "Hafif, portable PHP geliştirme ortamı"
+    "comments": "Hafif PHP + Node.js geliştirme ortamı"
   }
 }
