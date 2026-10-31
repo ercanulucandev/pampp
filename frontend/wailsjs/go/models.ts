@@ -1,5 +1,23 @@
 export namespace core {
 	
+	export class NodeRelease {
+	    branch: string;
+	    version: string;
+	    lts: string;
+	    url: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeRelease(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.branch = source["branch"];
+	        this.version = source["version"];
+	        this.lts = source["lts"];
+	        this.url = source["url"];
+	    }
+	}
 	export class Release {
 	    component: string;
 	    branch: string;
@@ -25,6 +43,7 @@ export namespace core {
 	    mariadb?: Release;
 	    phpmyadmin?: Release;
 	    composer?: Release;
+	    node: NodeRelease[];
 	    errors: string[];
 	
 	    static createFrom(source: any = {}) {
@@ -39,6 +58,7 @@ export namespace core {
 	        this.mariadb = this.convertValues(source["mariadb"], Release);
 	        this.phpmyadmin = this.convertValues(source["phpmyadmin"], Release);
 	        this.composer = this.convertValues(source["composer"], Release);
+	        this.node = this.convertValues(source["node"], NodeRelease);
 	        this.errors = source["errors"];
 	    }
 	
@@ -78,6 +98,18 @@ export namespace core {
 	        this.version = source["version"];
 	    }
 	}
+	export class NodeAppConfig {
+	    node?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeAppConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.node = source["node"];
+	    }
+	}
 	export class SiteConfig {
 	    php?: string;
 	
@@ -102,6 +134,8 @@ export namespace core {
 	    autoStart: boolean;
 	    closeToTray: boolean;
 	    sites: Record<string, SiteConfig>;
+	    defaultNode: string;
+	    nodeApps: Record<string, NodeAppConfig>;
 	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);
@@ -120,6 +154,8 @@ export namespace core {
 	        this.autoStart = source["autoStart"];
 	        this.closeToTray = source["closeToTray"];
 	        this.sites = this.convertValues(source["sites"], SiteConfig, true);
+	        this.defaultNode = source["defaultNode"];
+	        this.nodeApps = this.convertValues(source["nodeApps"], NodeAppConfig, true);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -154,6 +190,148 @@ export namespace core {
 	        this.size = source["size"];
 	    }
 	}
+	export class NodeScript {
+	    name: string;
+	    command: string;
+	    running: boolean;
+	    url: string;
+	    exitCode?: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeScript(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.command = source["command"];
+	        this.running = source["running"];
+	        this.url = source["url"];
+	        this.exitCode = source["exitCode"];
+	    }
+	}
+	export class NodeApp {
+	    name: string;
+	    path: string;
+	    packageName: string;
+	    version: string;
+	    description: string;
+	    framework: string;
+	    manager: string;
+	    hasModules: boolean;
+	    node: string;
+	    installing: boolean;
+	    scripts: NodeScript[];
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeApp(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.path = source["path"];
+	        this.packageName = source["packageName"];
+	        this.version = source["version"];
+	        this.description = source["description"];
+	        this.framework = source["framework"];
+	        this.manager = source["manager"];
+	        this.hasModules = source["hasModules"];
+	        this.node = source["node"];
+	        this.installing = source["installing"];
+	        this.scripts = this.convertValues(source["scripts"], NodeScript);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	
+	
+	export class NodeVersionState {
+	    branch: string;
+	    version: string;
+	    default: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeVersionState(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.branch = source["branch"];
+	        this.version = source["version"];
+	        this.default = source["default"];
+	    }
+	}
+	export class NodeState {
+	    installed: NodeVersionState[];
+	    default: string;
+	    apps: NodeApp[];
+	    running: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeState(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.installed = this.convertValues(source["installed"], NodeVersionState);
+	        this.default = source["default"];
+	        this.apps = this.convertValues(source["apps"], NodeApp);
+	        this.running = source["running"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class NodeTemplate {
+	    id: string;
+	    name: string;
+	    desc: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeTemplate(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.name = source["name"];
+	        this.desc = source["desc"];
+	    }
+	}
+	
 	export class PHPExtension {
 	    name: string;
 	    enabled: boolean;
@@ -295,6 +473,8 @@ export namespace core {
 	    vcRedist: boolean;
 	    ssl: SSLState;
 	    startUrl: string;
+	    node: NodeState;
+	    installed: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new State(source);
@@ -312,6 +492,8 @@ export namespace core {
 	        this.vcRedist = source["vcRedist"];
 	        this.ssl = this.convertValues(source["ssl"], SSLState);
 	        this.startUrl = source["startUrl"];
+	        this.node = this.convertValues(source["node"], NodeState);
+	        this.installed = source["installed"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

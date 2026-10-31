@@ -142,8 +142,9 @@ function save() {
 
     <div class="card card-pad about row">
       <div class="grow">
-        <strong>Kurulum klasörü</strong>
+        <strong>{{ s.installed ? 'Ana klasör' : 'Kurulum klasörü (portable)' }}</strong>
         <p class="muted small mono selectable">{{ s.root }}</p>
+        <p class="muted small" v-if="s.installed">Projelerin, veritabanların ve indirilen bileşenler burada; PAMPP'ı kaldırsan bile silinmez.</p>
       </div>
       <button class="btn" @click="Api.OpenFolder('')"><Icon name="folder" :size="15" /> Aç</button>
     </div>

@@ -93,6 +93,20 @@ func (a *App) OpenPHPIni(branch string) error {
 	return a.m.Open(path)
 }
 
+// ---- Node.js ----
+
+func (a *App) GetNodeTemplates() []core.NodeTemplate     { return core.NodeTemplates }
+func (a *App) CreateNodeApp(name, template string) error { return a.m.CreateNodeApp(name, template) }
+func (a *App) RunScript(app, script string) error        { return a.m.RunScript(app, script) }
+func (a *App) InstallPackages(app string) error          { return a.m.RunScript(app, "__install") }
+func (a *App) StopScript(app, script string)             { a.m.StopScript(app, script) }
+func (a *App) NodeLog(app, script string) []string       { return a.m.NodeLog(app, script) }
+func (a *App) ClearNodeLog(app, script string)           { a.m.ClearNodeLog(app, script) }
+func (a *App) SetAppNode(app, branch string) error       { return a.m.SetAppNode(app, branch) }
+func (a *App) SetDefaultNode(branch string) error        { return a.m.SetDefaultNode(branch) }
+func (a *App) RemoveNode(branch string) error            { return a.m.RemoveNode(branch) }
+func (a *App) OpenInEditor(path string) error            { return a.m.OpenInEditor(path) }
+
 // ---- installs ----
 
 func (a *App) Install(component, branch string) string { return a.m.Install(component, branch) }

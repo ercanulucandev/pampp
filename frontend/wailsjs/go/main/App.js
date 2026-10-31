@@ -6,6 +6,14 @@ export function ClearLog(arg1) {
   return window['go']['main']['App']['ClearLog'](arg1);
 }
 
+export function ClearNodeLog(arg1, arg2) {
+  return window['go']['main']['App']['ClearNodeLog'](arg1, arg2);
+}
+
+export function CreateNodeApp(arg1, arg2) {
+  return window['go']['main']['App']['CreateNodeApp'](arg1, arg2);
+}
+
 export function CreateSite(arg1, arg2) {
   return window['go']['main']['App']['CreateSite'](arg1, arg2);
 }
@@ -26,6 +34,10 @@ export function GetLogs() {
   return window['go']['main']['App']['GetLogs']();
 }
 
+export function GetNodeTemplates() {
+  return window['go']['main']['App']['GetNodeTemplates']();
+}
+
 export function GetState() {
   return window['go']['main']['App']['GetState']();
 }
@@ -34,8 +46,20 @@ export function Install(arg1, arg2) {
   return window['go']['main']['App']['Install'](arg1, arg2);
 }
 
+export function InstallPackages(arg1) {
+  return window['go']['main']['App']['InstallPackages'](arg1);
+}
+
+export function NodeLog(arg1, arg2) {
+  return window['go']['main']['App']['NodeLog'](arg1, arg2);
+}
+
 export function OpenFolder(arg1) {
   return window['go']['main']['App']['OpenFolder'](arg1);
+}
+
+export function OpenInEditor(arg1) {
+  return window['go']['main']['App']['OpenInEditor'](arg1);
 }
 
 export function OpenPHPIni(arg1) {
@@ -58,6 +82,10 @@ export function ReadLog(arg1) {
   return window['go']['main']['App']['ReadLog'](arg1);
 }
 
+export function RemoveNode(arg1) {
+  return window['go']['main']['App']['RemoveNode'](arg1);
+}
+
 export function RemovePHP(arg1) {
   return window['go']['main']['App']['RemovePHP'](arg1);
 }
@@ -70,8 +98,20 @@ export function RestartService(arg1) {
   return window['go']['main']['App']['RestartService'](arg1);
 }
 
+export function RunScript(arg1, arg2) {
+  return window['go']['main']['App']['RunScript'](arg1, arg2);
+}
+
 export function SaveSettings(arg1) {
   return window['go']['main']['App']['SaveSettings'](arg1);
+}
+
+export function SetAppNode(arg1, arg2) {
+  return window['go']['main']['App']['SetAppNode'](arg1, arg2);
+}
+
+export function SetDefaultNode(arg1) {
+  return window['go']['main']['App']['SetDefaultNode'](arg1);
 }
 
 export function SetDefaultPHP(arg1) {
@@ -96,6 +136,10 @@ export function StartService(arg1) {
 
 export function StopAll() {
   return window['go']['main']['App']['StopAll']();
+}
+
+export function StopScript(arg1, arg2) {
+  return window['go']['main']['App']['StopScript'](arg1, arg2);
 }
 
 export function StopService(arg1) {

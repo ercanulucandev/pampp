@@ -62,7 +62,7 @@ function restart(svc) {
         <div class="ob-item"><Icon name="database" /><b>MariaDB + phpMyAdmin</b><span>Veritabanı ve yönetim paneli hazır gelir.</span></div>
       </div>
       <div class="ob-foot">
-        <p class="muted small grow">Hızlı kurulum: Nginx, en güncel iki PHP sürümü, MariaDB, phpMyAdmin ve Composer (~250 MB).</p>
+        <p class="muted small grow">Hızlı kurulum: Nginx, en güncel iki PHP sürümü, MariaDB, phpMyAdmin, Composer ve Node.js LTS (~280 MB).</p>
         <button class="btn primary lg" :disabled="setupRunning" @click="call('setup', () => Api.QuickSetup())">
           <Icon :name="setupRunning ? 'refresh' : 'sparkle'" :size="16" :class="{ spin: setupRunning }" />
           {{ setupRunning ? 'Kuruluyor…' : 'Hızlı kurulumu başlat' }}

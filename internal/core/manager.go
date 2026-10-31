@@ -21,16 +21,17 @@ type Manager struct {
 
 	opMu sync.Mutex // serialises start/stop/install/config operations
 
-	mu      sync.Mutex // guards the fields below
-	cfg     Config
-	web     *webServer
-	db      *mariaDB
-	pools   map[string]*phpPool
-	tasks   map[string]*Task
-	errors  map[string]string
-	catalog catalogCache
-	ca      *localCA
-	trusted bool // cached: certutil is too slow to call on every State()
+	mu       sync.Mutex // guards the fields below
+	cfg      Config
+	web      *webServer
+	db       *mariaDB
+	pools    map[string]*phpPool
+	tasks    map[string]*Task
+	errors   map[string]string
+	catalog  catalogCache
+	ca       *localCA
+	nodeRuns map[string]*nodeRun
+	trusted  bool // cached: certutil is too slow to call on every State()
 }
 
 type Task struct {
@@ -49,12 +50,13 @@ func NewManager(root string, emit Emitter) *Manager {
 	p := Paths{Root: root}
 	_ = p.Ensure()
 	m := &Manager{
-		P:      p,
-		emit:   emit,
-		cfg:    loadConfig(p.ConfigFile()),
-		pools:  map[string]*phpPool{},
-		tasks:  map[string]*Task{},
-		errors: map[string]string{},
+		P:        p,
+		emit:     emit,
+		cfg:      loadConfig(p.ConfigFile()),
+		pools:    map[string]*phpPool{},
+		tasks:    map[string]*Task{},
+		errors:   map[string]string{},
+		nodeRuns: map[string]*nodeRun{},
 	}
 	if exists(filepath.Join(p.Data("ssl"), "ca.crt")) {
 		if ca, err := loadOrCreateCA(p.Data("ssl")); err == nil {
@@ -113,6 +115,8 @@ type State struct {
 	VCRedist   bool             `json:"vcRedist"`
 	SSL        SSLState         `json:"ssl"`
 	StartURL   string           `json:"startUrl"`
+	Node       NodeState        `json:"node"`
+	Installed  bool             `json:"installed"` // installer copy (uninstall.exe next to the exe)
 }
 
 type SSLState struct {
@@ -266,14 +270,16 @@ func (m *Manager) State() State {
 		webName = "Apache"
 	}
 	st := State{
-		Root:     m.P.Root,
-		PHP:      []PHPState{},
-		Config:   cfg,
-		Sites:    sites,
-		Tasks:    tasks,
-		VCRedist: vcRedistInstalled(),
-		SSL:      ssl,
-		StartURL: siteURL(cfg, "localhost"),
+		Root:      m.P.Root,
+		PHP:       []PHPState{},
+		Config:    cfg,
+		Sites:     sites,
+		Tasks:     tasks,
+		VCRedist:  vcRedistInstalled(),
+		SSL:       ssl,
+		StartURL:  siteURL(cfg, "localhost"),
+		Node:      m.nodeState(cfg),
+		Installed: installedCopy(),
 		Services: []ServiceState{
 			{ID: "web", Name: webName, Installed: m.componentInstalled(cfg.WebServer), Version: readVersionFile(m.dir(cfg.WebServer)),
 				Running: web != nil && web.proc.alive(), Port: cfg.HTTPPort, Error: errs["web"]},
@@ -324,6 +330,12 @@ func (m *Manager) updateConfig(fn func(c *Config)) error {
 		sites[k] = &cp
 	}
 	m.cfg.Sites = sites
+	apps := map[string]*NodeAppConfig{}
+	for k, v := range m.cfg.NodeApps {
+		cp := *v
+		apps[k] = &cp
+	}
+	m.cfg.NodeApps = apps
 	fn(&m.cfg)
 	m.cfg.normalize()
 	cfg := m.cfg
@@ -658,6 +670,7 @@ func (m *Manager) syncHosts(cfg Config) {
 }
 
 func (m *Manager) Shutdown() {
+	m.stopAllNode()
 	m.opMu.Lock()
 	defer m.opMu.Unlock()
 	m.stopWeb()
@@ -944,8 +957,11 @@ func (m *Manager) OpenTerminal(dir string) error {
 	if def := m.defaultPHP(cfg, installed); def != "" {
 		extra = append(extra, m.P.Bin("php", def))
 	}
+	if nodes, _ := m.installedNode(); len(nodes) > 0 {
+		extra = append(extra, m.P.Bin("node", m.defaultNode(cfg, nodes)))
+	}
 	extra = append(extra, m.P.Bin("composer"), m.P.Bin("mariadb", "bin"))
-	cmd := detachedCmd("cmd.exe", "/K", "title PAMPP && echo PAMPP terminali - php, composer ve mariadb PATH'te. && php -v")
+	cmd := detachedCmd("cmd.exe", "/K", "title PAMPP && echo PAMPP terminali - php, node, composer ve mariadb PATH'te.")
 	cmd.Dir = dir
 	cmd.Env = append(os.Environ(), "PATH="+strings.Join(extra, ";")+";"+os.Getenv("PATH"))
 	return cmd.Start()
@@ -998,7 +1014,7 @@ func (m *Manager) DismissTask(id string) {
 // Install downloads and installs a component in the background and returns the task id.
 // component is php|nginx|apache|mariadb|phpmyadmin|composer; branch is only used for php.
 func (m *Manager) Install(component, branch string) string {
-	label := map[string]string{"php": "PHP " + branch, "nginx": "Nginx", "apache": "Apache", "mariadb": "MariaDB", "phpmyadmin": "phpMyAdmin", "composer": "Composer"}[component]
+	label := map[string]string{"php": "PHP " + branch, "nginx": "Nginx", "apache": "Apache", "mariadb": "MariaDB", "phpmyadmin": "phpMyAdmin", "composer": "Composer", "node": "Node.js " + branch}[component]
 	t := m.newTask(label + " kuruluyor")
 	go func() {
 		err := m.install(t, component, branch)
@@ -1029,8 +1045,17 @@ func (m *Manager) QuickSetup() string {
 			for i := len(phps) - 1; i >= 0; i-- {
 				steps = append([][2]string{{"php", phps[i]}}, steps...)
 			}
+			// Newest LTS Node.js for the nodejs/ projects.
+			for _, r := range cat.Node {
+				if r.LTS != "" {
+					if nodes, _ := m.installedNode(); len(nodes) == 0 {
+						steps = append(steps, [2]string{"node", r.Branch})
+					}
+					break
+				}
+			}
 			for _, s := range steps {
-				if s[0] != "php" && m.componentInstalled(s[0]) {
+				if s[0] != "php" && s[0] != "node" && m.componentInstalled(s[0]) {
 					continue
 				}
 				if s[0] == "php" && exists(m.P.Bin("php", s[1], "php-cgi.exe")) {
@@ -1107,6 +1132,9 @@ func (m *Manager) fetch(t *Task, name, url, fallback, dest string) error {
 }
 
 func (m *Manager) install(t *Task, component, branch string) error {
+	if component == "node" {
+		return m.installNode(t, branch)
+	}
 	rel, err := m.findRelease(component, branch)
 	if err != nil {
 		return err
@@ -1255,4 +1283,10 @@ $cfg['ThemeDefault'] = 'pmahomme';
 $cfg['VersionCheck'] = false;
 `, hex.EncodeToString(secret), port)
 	return os.WriteFile(filepath.Join(dir, "config.inc.php"), []byte(conf), 0o644)
+}
+
+// installedCopy reports whether the running executable came from the installer.
+func installedCopy() bool {
+	exe, err := os.Executable()
+	return err == nil && IsInstalled(filepath.Dir(exe))
 }

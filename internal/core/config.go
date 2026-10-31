@@ -9,18 +9,24 @@ type SiteConfig struct {
 	PHP string `json:"php,omitempty"` // PHP branch, e.g. "8.3"; empty = default
 }
 
+type NodeAppConfig struct {
+	Node string `json:"node,omitempty"` // Node major, e.g. "24"; empty = default
+}
+
 type Config struct {
-	WebServer   string                 `json:"webServer"` // "nginx" | "apache"
-	HTTPPort    int                    `json:"httpPort"`
-	SSL         bool                   `json:"ssl"`
-	HTTPSPort   int                    `json:"httpsPort"`
-	DBPort      int                    `json:"dbPort"`
-	TLD         string                 `json:"tld"`
-	DefaultPHP  string                 `json:"defaultPhp"`
-	PHPWorkers  int                    `json:"phpWorkers"`
-	AutoStart   bool                   `json:"autoStart"`
-	CloseToTray bool                   `json:"closeToTray"`
-	Sites       map[string]*SiteConfig `json:"sites"`
+	WebServer   string                    `json:"webServer"` // "nginx" | "apache"
+	HTTPPort    int                       `json:"httpPort"`
+	SSL         bool                      `json:"ssl"`
+	HTTPSPort   int                       `json:"httpsPort"`
+	DBPort      int                       `json:"dbPort"`
+	TLD         string                    `json:"tld"`
+	DefaultPHP  string                    `json:"defaultPhp"`
+	PHPWorkers  int                       `json:"phpWorkers"`
+	AutoStart   bool                      `json:"autoStart"`
+	CloseToTray bool                      `json:"closeToTray"`
+	Sites       map[string]*SiteConfig    `json:"sites"`
+	DefaultNode string                    `json:"defaultNode"`
+	NodeApps    map[string]*NodeAppConfig `json:"nodeApps"`
 }
 
 func defaultConfig() Config {
@@ -67,6 +73,9 @@ func (c *Config) normalize() {
 	}
 	if c.PHPWorkers > 9 {
 		c.PHPWorkers = 9
+	}
+	if c.NodeApps == nil {
+		c.NodeApps = map[string]*NodeAppConfig{}
 	}
 	if c.Sites == nil {
 		c.Sites = map[string]*SiteConfig{}

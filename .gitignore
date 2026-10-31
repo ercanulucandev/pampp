@@ -11,3 +11,4 @@ frontend/package.json.md5
 /tmp/
 /www/
 pampp.json
+build/windows/installer/tmp/

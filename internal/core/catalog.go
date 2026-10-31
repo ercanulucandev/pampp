@@ -21,13 +21,14 @@ type Release struct {
 }
 
 type Catalog struct {
-	PHP        []Release `json:"php"`
-	Nginx      *Release  `json:"nginx"`
-	Apache     *Release  `json:"apache"`
-	MariaDB    *Release  `json:"mariadb"`
-	PhpMyAdmin *Release  `json:"phpmyadmin"`
-	Composer   *Release  `json:"composer"`
-	Errors     []string  `json:"errors"`
+	PHP        []Release     `json:"php"`
+	Nginx      *Release      `json:"nginx"`
+	Apache     *Release      `json:"apache"`
+	MariaDB    *Release      `json:"mariadb"`
+	PhpMyAdmin *Release      `json:"phpmyadmin"`
+	Composer   *Release      `json:"composer"`
+	Node       []NodeRelease `json:"node"`
+	Errors     []string      `json:"errors"`
 }
 
 type catalogCache struct {
@@ -68,6 +69,7 @@ func fetchCatalog() *Catalog {
 	run("MariaDB", func() (err error) { cat.MariaDB, err = fetchMariaDB(); return })
 	run("phpMyAdmin", func() (err error) { cat.PhpMyAdmin, err = fetchPhpMyAdmin(); return })
 	run("Composer", func() (err error) { cat.Composer, err = fetchComposer(); return })
+	run("Node.js", func() (err error) { cat.Node, err = fetchNodeReleases(); return })
 	wg.Wait()
 	return cat
 }

@@ -5,12 +5,13 @@
 <h1 align="center">PAMPP</h1>
 
 <p align="center">
-  Windows için hafif, hızlı ve portable PHP geliştirme ortamı.<br>
-  Nginx / Apache · PHP 7.4 – 8.5 · MariaDB · phpMyAdmin · Composer · Yerel SSL
+  Windows için hafif ve hızlı PHP + Node.js geliştirme ortamı. Portable ya da kurulumlu.<br>
+  Nginx / Apache · PHP 7.4 – 8.5 · Node.js · MariaDB · phpMyAdmin · Composer · Yerel SSL
 </p>
 
 <p align="center">
-  <a href="https://github.com/ercanulucandev/pampp/releases/latest"><b>⬇️ İndir (pampp.exe)</b></a> ·
+  <a href="https://github.com/ercanulucandev/pampp/releases/latest/download/pampp-setup.exe"><b>⬇️ Installer (pampp-setup.exe)</b></a> ·
+  <a href="https://github.com/ercanulucandev/pampp/releases/latest/download/pampp.exe"><b>Portable (pampp.exe)</b></a> ·
   <a href="#geliştirme">Kaynaktan derle</a> ·
   <a href="LICENSE">MIT Lisansı</a>
 </p>
@@ -19,41 +20,59 @@
 
 ## Neden PAMPP?
 
-XAMPP, Laragon, MAMP gibi araçlar ya ağır ya da esnek değil. PAMPP **tek bir ~13 MB'lık exe**. Kurulum gerektirmez, sisteme hiçbir şey yazmaz; indirdiği her şeyi kendi klasöründe tutar.
+XAMPP, Laragon, MAMP gibi araçlar ya ağır ya da esnek değil. PAMPP **~14 MB'lık tek bir program**. İster kur, ister portable çalıştır; indirdiği her şeyi kendi klasöründe tutar.
 
 ## Özellikler
 
+### PHP
 - **Otomatik siteler:** `www/blog` klasörü anında `blog.test` olur. `public/` klasörü varsa (Laravel, Symfony…) kök dizin o olur.
 - **Site başına PHP sürümü:** Tek tıkla değişir, sunucu kesintisiz yeniden yüklenir.
 - **Birden fazla PHP:** 7.4'ten 8.5'e kadar. Her sürüm kendi FastCGI havuzunda çalışır; sadece kullanılanlar başlatılır.
-- **Yerel SSL:** PAMPP kendi sertifika otoritesini oluşturur. Tüm siteler `https://` ile kilit simgesiyle açılır. Sertifikalar site eklendikçe otomatik yenilenir; güven onayı tek tık, yönetici yetkisi gerekmez.
 - **Nginx ↔ Apache:** Ayarlardan geçiş; ikisi de aynı siteleri, PHP havuzlarını ve sertifikayı kullanır.
-- **Tek tıkla güncelleme:** PHP, Nginx, Apache, MariaDB, phpMyAdmin ve Composer resmi kaynaklardan kurulur ve güncellenir; ayarlar korunur.
 - **PHP eklentileri:** Arayüzden aç/kapat, `php.ini`'ye tek tıkla erişim.
+- **Şık yeni site akışı:** Yeni siteyle birlikte hazır bir karşılama sayfası gelir: PHP sürümü, DB bağlantısı, HTTPS durumu, sonraki adımlar.
+
+### Node.js
+- **Otomatik proje algılama:** `nodejs/` içindeki her `package.json` projesi listelenir. Framework (Next.js, Vite, Nuxt, Astro, SvelteKit, Express, NestJS…) ve paket yöneticisi (npm, pnpm, yarn) tanınır.
+- **Tek tıkla script'ler:** Paketleri kur; `dev`, `build`, `start`, `lint` dahil tüm script'leri başlat ve durdur. Çıktıyı canlı izle. Dev sunucusunun adresi otomatik bulunur ve tek tıkla açılır.
+- **Node sürümleri:** LTS ve Current sürümleri kur, proje başına Node sürümü seç.
+- **Proje şablonları:** React / Vue / Svelte + Vite, Next.js, Express API veya boş proje. Oluşturulur ve paketleri otomatik kurulur.
+
+### Genel
+- **Yerel SSL:** PAMPP kendi sertifika otoritesini oluşturur. Tüm siteler `https://` ile kilit simgesiyle açılır. Sertifikalar otomatik yenilenir; güven onayı tek tık, yönetici yetkisi gerekmez.
+- **Tek tıkla güncelleme:** PHP, Node.js, Nginx, Apache, MariaDB, phpMyAdmin ve Composer resmi kaynaklardan kurulur ve güncellenir; ayarlar korunur.
 - **Başlangıç sayfası:** `https://localhost` adresinde siteler, sürümler, veritabanı bilgileri ve ilk adımlar.
-- **Şık yeni site akışı:** Yeni site oluşturunca hazır bir karşılama sayfası gelir (PHP sürümü, DB bağlantısı, HTTPS durumu, sonraki adımlar).
 - **hosts dosyası:** Otomatik güncellenir (yalnızca o adımda UAC onayı istenir). `.localhost` uzantısı seçilirse hosts dosyasına hiç dokunulmaz.
-- **Sistem tepsisi:** Kapatınca tepsiye küçülür, servisler çalışmaya devam eder.
-- **Güvenli süreç yönetimi:** Tüm alt süreçler bir Windows Job Object içinde çalışır; PAMPP kapanırsa, çökse bile, arkada nginx/php kalmaz.
-- **Terminal:** `php`, `composer` ve `mariadb` PATH'te hazır gelir.
+- **Sistem tepsisi, canlı loglar, hazır terminal:** Terminalde `php`, `node`, `composer` ve `mariadb` PATH'te gelir.
+- **Güvenli süreç yönetimi:** Tüm alt süreçler bir Windows Job Object içinde çalışır; PAMPP kapanırsa, çökse bile, arkada süreç kalmaz.
 
 ## Hızlı başlangıç
 
-1. [Releases](https://github.com/ercanulucandev/pampp/releases/latest) sayfasından `pampp.exe`'yi indir.
-2. Bir klasöre koy, mesela `C:\pampp\`. OneDrive veya Masaüstü önerilmez, çünkü indirilen bileşenler senkronlanmaya çalışır.
-3. Çalıştır ve **Hızlı kurulumu başlat**'a tıkla. Nginx, iki PHP sürümü, MariaDB, phpMyAdmin ve Composer kurulur, servisler başlar, başlangıç sayfası açılır.
-4. Ayarlar → SSL → **Güvenilir yap** ile HTTPS uyarılarından kurtul.
+İki seçenek var, ikisi de aynı programdır:
+
+| | Installer | Portable |
+|---|---|---|
+| Dosya | `pampp-setup.exe` | `pampp.exe` |
+| Kurulum | `C:\pampp` (değiştirilebilir), başlat menüsü ve masaüstü kısayolu | Yok, istediğin klasörden çalıştır |
+| Veriler (www, nodejs, veritabanı) | `C:\pampp` içinde; kaldırınca silinmez | exe'nin yanındaki klasörler |
+
+1. [Releases](https://github.com/ercanulucandev/pampp/releases/latest) sayfasından birini indir. Portable sürümü OneDrive veya Masaüstü yerine kendi klasörüne koy (ör. `D:\pampp\`).
+2. Çalıştır ve **Hızlı kurulumu başlat**'a tıkla. Nginx, iki PHP sürümü, MariaDB, phpMyAdmin, Composer ve Node.js LTS kurulur; servisler başlar ve başlangıç sayfası açılır.
+3. Ayarlar → SSL → **Güvenilir yap** ile HTTPS uyarılarından kurtul.
 
 > PHP ve Apache için [Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) gerekir. PAMPP eksikse uyarır.
+> Program imzasız olduğu için Windows SmartScreen ilk açılışta uyarabilir: *Ek bilgi → Yine de çalıştır*.
 
-## Klasör yapısı (exe'nin yanında)
+## Klasör yapısı
+
+Installer sürümünde `C:\pampp`, portable sürümde exe'nin yanındaki klasör. (Program Files altına kurulursa veriler `%USERPROFILE%\PAMPP`'a yazılır.)
 
 ```
-pampp.exe
 pampp.json      ayarlar
-bin/            php/8.3, php/8.4, nginx, apache, mariadb, phpmyadmin, composer
+bin/            php/8.4, node/26, nginx, apache, mariadb, phpmyadmin, composer
 etc/            üretilen nginx/apache/mariadb config'leri (her seferinde yeniden yazılır)
-www/            projeler
+www/            PHP projeleri
+nodejs/         Node.js projeleri
 data/mariadb    veritabanı dosyaları
 data/ssl        yerel sertifika otoritesi ve site sertifikası
 data/start      başlangıç sayfası (localhost)
@@ -64,29 +83,34 @@ Portlar: HTTP 80, HTTPS 443, MariaDB 3306. PHP işçileri `10000 + (major*10+min
 
 ## Geliştirme
 
-Gerekenler: Go 1.25+, Node 20+, Wails CLI (`go install github.com/wailsapp/wails/v2/cmd/wails@latest`)
+Gerekenler: Go 1.25+, Node 20+, Wails CLI (`go install github.com/wailsapp/wails/v2/cmd/wails@latest`). Installer için ayrıca NSIS (`winget install NSIS.NSIS`).
 
 ```bash
-wails dev      # canlı geliştirme
-wails build    # build/bin/pampp.exe
+wails dev           # canlı geliştirme
+wails build         # build/bin/pampp.exe
+wails build -nsis   # + build/bin/PAMPP-setup.exe
 ```
 
-Uçtan uca test (gerçek bileşenleri indirir, yaklaşık 250 MB). Nginx ve Apache üzerinde PHP sürüm geçişini, MariaDB'yi, phpMyAdmin'i, HTTPS'i ve yeni site akışını doğrular:
+Uçtan uca testler gerçek bileşenleri indirir. Nginx ve Apache üzerinde PHP sürüm geçişini, MariaDB'yi, phpMyAdmin'i, HTTPS'i, yeni site akışını ve Node.js projelerini (Express dev sunucusu, Vite build, istersen Next.js) doğrular:
 
 ```bash
-PAMPP_E2E_ROOT=/tmp/pampp-e2e go test ./internal/core -run TestEndToEnd -v
+PAMPP_E2E_ROOT=/tmp/pampp-e2e go test ./internal/core -v
+PAMPP_E2E_ROOT=/tmp/pampp-e2e PAMPP_E2E_NEXT=1 go test ./internal/core -run TestNodeEndToEnd -v
 ```
 
 ### Kod yapısı
 
 - `internal/core/manager.go`: Durum, servis orkestrasyonu, kurulumlar
 - `internal/core/php.go`: php-cgi havuzu, php.ini ve eklentiler
+- `internal/core/node.go`: Node.js sürümleri, proje algılama, script çalıştırıcı, şablonlar
 - `internal/core/webserver.go`: Nginx/Apache config üretimi ve süreç kontrolü
 - `internal/core/ssl.go`: Yerel CA, site sertifikaları, Windows güven deposu
 - `internal/core/pages.go`, `templates/`: Başlangıç sayfası ve yeni site karşılama sayfası
+- `internal/core/paths.go`: Portable / kurulu mod ve veri klasörü
 - `internal/core/mariadb.go`, `hosts.go`, `catalog.go` (sürüm kaynakları), `download.go`
 - `app.go`: Frontend'e açılan metotlar · `tray.go`: Sistem tepsisi
-- `frontend/src/views`: Panel, Siteler, PHP, Bileşenler, Loglar, Ayarlar
+- `frontend/src/views`: Panel, Siteler, PHP, Node.js, Bileşenler, Loglar, Ayarlar
+- `build/windows/installer/project.nsi`: NSIS installer
 
 ## Lisans
 

@@ -11,8 +11,10 @@ type Paths struct {
 	Root string
 }
 
-// ResolveRoot returns the folder next to the executable (portable layout).
-// PAMPP_HOME overrides it, which is handy during development.
+// ResolveRoot returns where PAMPP keeps its data: the folder next to the executable
+// (C:\pampp for the installer, any folder for the portable build). Only a copy placed
+// under Program Files, which normal users cannot write to, falls back to %USERPROFILE%\PAMPP.
+// PAMPP_HOME overrides everything, which is handy during development.
 func ResolveRoot() string {
 	if v := os.Getenv("PAMPP_HOME"); v != "" {
 		return v
@@ -23,7 +25,32 @@ func ResolveRoot() string {
 		return wd
 	}
 	exe, _ = filepath.EvalSymlinks(exe)
-	return filepath.Dir(exe)
+	dir := filepath.Dir(exe)
+	if DataInProfile(dir) {
+		if home, err := os.UserHomeDir(); err == nil {
+			return filepath.Join(home, "PAMPP")
+		}
+	}
+	return dir
+}
+
+// IsInstalled reports whether exeDir holds an installer-made copy (the NSIS uninstaller sits next to it).
+func IsInstalled(exeDir string) bool {
+	return exists(filepath.Join(exeDir, "uninstall.exe"))
+}
+
+// DataInProfile reports whether data must live in %USERPROFILE%\PAMPP because exeDir is
+// under Program Files. A pampp.portable marker or existing pampp.json keeps data local.
+func DataInProfile(exeDir string) bool {
+	if exists(filepath.Join(exeDir, "pampp.portable")) || exists(filepath.Join(exeDir, "pampp.json")) {
+		return false
+	}
+	for _, env := range []string{"ProgramFiles", "ProgramFiles(x86)", "ProgramW6432"} {
+		if pf := os.Getenv(env); pf != "" && strings.HasPrefix(strings.ToLower(exeDir), strings.ToLower(pf)+`\`) {
+			return true
+		}
+	}
+	return false
 }
 
 func (p Paths) join(parts ...string) string {
@@ -36,11 +63,12 @@ func (p Paths) Data(parts ...string) string { return p.join(append([]string{"dat
 func (p Paths) Logs(parts ...string) string { return p.join(append([]string{"logs"}, parts...)...) }
 func (p Paths) Tmp(parts ...string) string  { return p.join(append([]string{"tmp"}, parts...)...) }
 func (p Paths) WWW(parts ...string) string  { return p.join(append([]string{"www"}, parts...)...) }
+func (p Paths) Node(parts ...string) string { return p.join(append([]string{"nodejs"}, parts...)...) }
 func (p Paths) ConfigFile() string          { return p.join("pampp.json") }
 
 // Ensure creates the base directory layout.
 func (p Paths) Ensure() error {
-	for _, d := range []string{p.Bin(), p.Etc("nginx", "sites"), p.Etc("apache", "sites"), p.Etc("mariadb"), p.Data(), p.Logs(), p.Tmp("downloads"), p.WWW()} {
+	for _, d := range []string{p.Bin(), p.Etc("nginx", "sites"), p.Etc("apache", "sites"), p.Etc("mariadb"), p.Data(), p.Logs(), p.Tmp("downloads"), p.WWW(), p.Node()} {
 		if err := os.MkdirAll(d, 0o755); err != nil {
 			return err
 		}

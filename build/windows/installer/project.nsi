@@ -1,4 +1,4 @@
-Unicode true
+﻿Unicode true
 
 ####
 ## Please note: Template replacements don't work in this file. They are provided with default defines like
@@ -32,6 +32,7 @@ Unicode true
 ####
 ## Include the wails tools
 ####
+!define INFO_COMPANYNAME "PAMPP"
 !include "wails_tools.nsh"
 
 # The version information for this two must consist of 4 parts
@@ -55,6 +56,10 @@ ManifestDPIAware true
 # !define MUI_WELCOMEFINISHPAGE_BITMAP "resources\leftimage.bmp" #Include this to add a bitmap on the left side of the Welcome Page. Must be a size of 164x314
 !define MUI_FINISHPAGE_NOAUTOCLOSE # Wait on the INSTFILES page so the user can take a look into the details of the installation steps
 !define MUI_ABORTWARNING # This will warn the user if they exit from the installer.
+!define MUI_WELCOMEPAGE_TITLE "PAMPP Kurulumu"
+!define MUI_WELCOMEPAGE_TEXT "Windows için hafif ve hızlı PHP + Node.js geliştirme ortamı.$\r$\n$\r$\nPAMPP varsayılan olarak C:\pampp klasörüne kurulur. Projelerin (www, nodejs), veritabanların ve indirilen bileşenler de bu klasörde tutulur. PAMPP'ı kaldırsan bile bunlar silinmez."
+!define MUI_FINISHPAGE_RUN "$INSTDIR\${PRODUCT_EXECUTABLE}"
+!define MUI_FINISHPAGE_RUN_TEXT "PAMPP'ı şimdi başlat"
 
 !insertmacro MUI_PAGE_WELCOME # Welcome to the installer page.
 # !insertmacro MUI_PAGE_LICENSE "resources\eula.txt" # Adds a EULA page to the installer
@@ -64,22 +69,23 @@ ManifestDPIAware true
 
 !insertmacro MUI_UNPAGE_INSTFILES # Uinstalling page
 
-!insertmacro MUI_LANGUAGE "English" # Set the Language of the installer
+!insertmacro MUI_LANGUAGE "Turkish"
+!insertmacro MUI_LANGUAGE "English"
 
 ## The following two statements can be used to sign the installer and the uninstaller. The path to the binaries are provided in %1
 #!uninstfinalize 'signtool --file "%1"'
 #!finalize 'signtool --file "%1"'
 
 Name "${INFO_PRODUCTNAME}"
-OutFile "..\..\bin\${INFO_PROJECTNAME}-${ARCH}-installer.exe" # Name of the installer's file.
+OutFile "..\..\bin\${INFO_PROJECTNAME}-setup.exe" # Name of the installer's file.
 !ifdef WAILS_INSTALL_SCOPE
   !if "${WAILS_INSTALL_SCOPE}" == "user"
-    InstallDir "$LOCALAPPDATA\Programs\${INFO_PRODUCTNAME}"
+    InstallDir "C:\pampp"
   !else
-    InstallDir "$PROGRAMFILES64\${INFO_COMPANYNAME}\${INFO_PRODUCTNAME}"
+    InstallDir "C:\pampp"
   !endif
 !else
-  InstallDir "$PROGRAMFILES64\${INFO_COMPANYNAME}\${INFO_PRODUCTNAME}"
+  InstallDir "C:\pampp"
 !endif # Default installing folder ($PROGRAMFILES is Program Files folder).
 ShowInstDetails show # This will always show the installation details.
 
@@ -92,9 +98,16 @@ Section
 
     !insertmacro wails.webview2runtime
 
+    # A running PAMPP locks its exe; closing it also stops its servers (job object).
+    nsExec::Exec 'taskkill /IM ${PRODUCT_EXECUTABLE} /F'
+    Sleep 500
+
     SetOutPath $INSTDIR
 
     !insertmacro wails.files
+
+    # Users (S-1-5-32-545) get Modify on the PAMPP folder so it works without admin rights.
+    nsExec::Exec 'icacls "$INSTDIR" /grant *S-1-5-32-545:(OI)(CI)M /Q'
 
     CreateShortcut "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
     CreateShortCut "$DESKTOP\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
@@ -110,7 +123,11 @@ Section "uninstall"
 
     RMDir /r "$AppData\${PRODUCT_EXECUTABLE}" # Remove the WebView2 DataPath
 
-    RMDir /r $INSTDIR
+    nsExec::Exec 'taskkill /IM ${PRODUCT_EXECUTABLE} /F'
+    Sleep 500
+
+    # Only the program is removed. Projects, databases and downloaded components stay in $INSTDIR.
+    Delete "$INSTDIR\${PRODUCT_EXECUTABLE}"
 
     Delete "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk"
     Delete "$DESKTOP\${INFO_PRODUCTNAME}.lnk"
@@ -119,4 +136,7 @@ Section "uninstall"
     !insertmacro wails.unassociateCustomProtocols
 
     !insertmacro wails.deleteUninstaller
+
+    RMDir "$INSTDIR" # only succeeds when the folder is empty
+    DetailPrint "Projelerin ve veritabanların $INSTDIR klasöründe korundu."
 SectionEnd

@@ -6,6 +6,7 @@ import Logo from './components/Logo.vue'
 import Dashboard from './views/Dashboard.vue'
 import Sites from './views/Sites.vue'
 import Php from './views/Php.vue'
+import Node from './views/Node.vue'
 import Components from './views/Components.vue'
 import Logs from './views/Logs.vue'
 import Settings from './views/Settings.vue'
@@ -15,6 +16,7 @@ const nav = [
   { id: 'dashboard', label: 'Panel', icon: 'dashboard', comp: Dashboard },
   { id: 'sites', label: 'Siteler', icon: 'globe', comp: Sites },
   { id: 'php', label: 'PHP', icon: 'code', comp: Php },
+  { id: 'node', label: 'Node.js', icon: 'hexagon', comp: Node },
   { id: 'components', label: 'Bileşenler', icon: 'package', comp: Components },
   { id: 'logs', label: 'Loglar', icon: 'logs', comp: Logs },
   { id: 'settings', label: 'Ayarlar', icon: 'settings', comp: Settings },
@@ -45,6 +47,7 @@ function toggleAll() {
           <Icon :name="n.icon" />
           <span>{{ n.label }}</span>
           <span v-if="n.id === 'sites' && store.state" class="count">{{ store.state.sites.length }}</span>
+          <span v-if="n.id === 'node' && store.state?.node.running" class="count live">{{ store.state.node.running }}</span>
         </button>
       </nav>
 
@@ -111,6 +114,7 @@ nav { display: flex; flex-direction: column; gap: 2px; }
 .nav-item:hover { background: var(--panel-2); color: var(--text); }
 .nav-item.active { background: var(--accent-soft); color: var(--accent-text); }
 .nav-item span:nth-child(2) { flex: 1; }
+.count.live { background: var(--green-soft); color: var(--green); }
 .count { font-size: 11.5px; padding: 1px 7px; border-radius: 999px; background: var(--panel-2); color: var(--muted); }
 
 .side-foot { margin-top: auto; padding: 14px 6px 0; border-top: 1px solid var(--border); }

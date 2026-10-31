@@ -9,7 +9,13 @@ export const store = reactive({
   tasks: {},
   toasts: [],
   busy: {},
+  nodeLogs: {}, // "app/script" -> lines, streamed from the backend
 })
+
+// loadNodeLog fetches the buffered output of a run once; live lines then arrive via events.
+export async function loadNodeLog(app, script) {
+  store.nodeLogs[app + '/' + script] = (await Api.NodeLog(app, script)) || []
+}
 
 let toastId = 0
 export function toast(message, kind = 'info') {
@@ -59,6 +65,11 @@ export async function loadCatalog(force = false) {
 export function init() {
   EventsOn('state', s => {
     store.state = s
+  })
+  EventsOn('nodelog', ({ key, lines }) => {
+    const buf = store.nodeLogs[key] || (store.nodeLogs[key] = [])
+    buf.push(...lines)
+    if (buf.length > 3000) buf.splice(0, buf.length - 3000)
   })
   EventsOn('task', t => {
     const prev = store.tasks[t.id]
