@@ -14,12 +14,13 @@ type NodeAppConfig struct {
 }
 
 type Config struct {
-	WebServer   string                    `json:"webServer"` // "nginx" | "apache"
+	WebServer   string                    `json:"webServer"` // "apache" (default, .htaccess) | "nginx"
 	HTTPPort    int                       `json:"httpPort"`
 	SSL         bool                      `json:"ssl"`
 	HTTPSPort   int                       `json:"httpsPort"`
 	DBPort      int                       `json:"dbPort"`
-	DBPassword  string                    `json:"dbPassword"` // MariaDB root password (local dev only)
+	DBPassword  string                    `json:"dbPassword"`    // MariaDB root password (local dev only)
+	ShowSysDBs  bool                      `json:"showSystemDbs"` // list mysql, sys... in PAMPP and phpMyAdmin
 	TLD         string                    `json:"tld"`
 	DefaultPHP  string                    `json:"defaultPhp"`
 	PHPWorkers  int                       `json:"phpWorkers"`
@@ -32,7 +33,7 @@ type Config struct {
 
 func defaultConfig() Config {
 	return Config{
-		WebServer:   "nginx",
+		WebServer:   "apache",
 		HTTPPort:    80,
 		SSL:         true,
 		HTTPSPort:   443,
@@ -54,8 +55,8 @@ func loadConfig(path string) Config {
 }
 
 func (c *Config) normalize() {
-	if c.WebServer != "apache" {
-		c.WebServer = "nginx"
+	if c.WebServer != "nginx" {
+		c.WebServer = "apache"
 	}
 	if c.HTTPPort <= 0 || c.HTTPPort > 65535 {
 		c.HTTPPort = 80

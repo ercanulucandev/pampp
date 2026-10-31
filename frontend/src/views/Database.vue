@@ -49,7 +49,15 @@ const selected = ref('')
 const dbSearch = ref('')
 const newDb = ref('')
 const tables = ref([])
-const visibleDbs = computed(() => (ov.value?.databases || []).filter(d => d.name.includes(dbSearch.value.toLowerCase())))
+// System databases (mysql, sys...) stay hidden unless the user opts in; phpMyAdmin follows the same setting.
+const showSystem = computed(() => s.value.config.showSystemDbs)
+const shownDbs = computed(() => (ov.value?.databases || []).filter(d => showSystem.value || !d.system))
+const visibleDbs = computed(() => shownDbs.value.filter(d => d.name.includes(dbSearch.value.toLowerCase())))
+const hiddenCount = computed(() => (ov.value?.databases || []).filter(d => d.system).length)
+function toggleSystem(e) {
+  call('sysdb', () => Api.SetShowSystemDBs(e.target.checked))
+  if (!e.target.checked && current.value?.system) selected.value = shownDbs.value.find(d => !d.system)?.name || ''
+}
 const current = computed(() => ov.value?.databases.find(d => d.name === selected.value))
 
 watch(selected, async name => {
@@ -252,6 +260,10 @@ async function runSQL() {
             <button class="btn sm primary icon" :disabled="!newDb.trim() || store.busy['db:create']" title="Oluştur"><Icon name="plus" :size="14" /></button>
           </form>
           <input class="input sm search" v-model="dbSearch" placeholder="Ara…" />
+          <label class="sys-toggle">
+            <span class="switch"><input type="checkbox" :checked="showSystem" @change="toggleSystem" /><span></span></span>
+            <span class="small">Sistem veritabanları <span class="muted">({{ hiddenCount }})</span></span>
+          </label>
           <button v-for="d in visibleDbs" :key="d.name" class="db-item" :class="{ active: d.name === selected, system: d.system }" @click="selected = d.name">
             <Icon name="database" :size="14" />
             <span class="grow name">{{ d.name }}</span>
@@ -327,7 +339,7 @@ async function runSQL() {
         <div class="row sql-bar">
           <select class="input sm" v-model="sql.db" style="width:200px">
             <option value="">(veritabanı yok)</option>
-            <option v-for="d in ov.databases" :key="d.name" :value="d.name">{{ d.name }}</option>
+            <option v-for="d in shownDbs" :key="d.name" :value="d.name">{{ d.name }}</option>
           </select>
           <span class="muted small grow">Ctrl + Enter ile çalıştır · en fazla 1000 satır gösterilir</span>
           <button class="btn sm primary" :disabled="sql.running || !sql.query.trim()" @click="runSQL">
@@ -462,6 +474,8 @@ async function runSQL() {
 .db-list { padding: 8px; display: flex; flex-direction: column; gap: 2px; max-height: 560px; overflow-y: auto; }
 .new-db { gap: 6px; margin-bottom: 6px; }
 .search { margin-bottom: 6px; }
+.sys-toggle { display: flex; align-items: center; gap: 8px; padding: 4px 6px 8px; cursor: pointer; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sys-toggle .switch { transform: scale(.85); transform-origin: left center; }
 .db-item { display: flex; align-items: center; gap: 9px; width: 100%; padding: 8px 10px; border: none; border-radius: 8px;
   background: transparent; color: var(--text); font: inherit; cursor: pointer; text-align: left; }
 .db-item svg { color: var(--accent-text); flex: none; }

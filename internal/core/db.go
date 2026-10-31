@@ -504,10 +504,7 @@ func (m *Manager) SetRootPassword(password string) error {
 		m.db.password = password
 	}
 	m.mu.Unlock()
-	cfg := m.config()
-	if m.componentInstalled("phpmyadmin") {
-		_ = writePMAConfig(m.P.Bin("phpmyadmin"), cfg.DBPort, password)
-	}
+	_ = m.syncPMAConfig()
 	m.opMu.Lock()
 	_ = m.apply() // refresh the start page
 	m.opMu.Unlock()

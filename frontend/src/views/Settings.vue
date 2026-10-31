@@ -2,6 +2,7 @@
 import { computed, reactive, watch } from 'vue'
 import { store, call, Api } from '../store'
 import Icon from '../components/Icon.vue'
+import Logo from '../components/Logo.vue'
 
 const s = computed(() => store.state)
 const form = reactive({})
@@ -40,10 +41,10 @@ function save() {
       <div class="setting">
         <div class="grow">
           <strong>Web sunucusu</strong>
-          <p class="muted small">Tüm siteler ve PHP havuzları ikisiyle de çalışır.</p>
+          <p class="muted small">Apache varsayılan ve .htaccess dosyalarını tam destekler. Nginx daha hafif ama .htaccess okumaz. Siteler ve PHP havuzları ikisiyle de çalışır.</p>
         </div>
         <div class="segmented">
-          <button v-for="w in ['nginx', 'apache']" :key="w" :class="{ active: form.webServer === w }" @click="form.webServer = w">
+          <button v-for="w in ['apache', 'nginx']" :key="w" :class="{ active: form.webServer === w }" @click="form.webServer = w">
             {{ w === 'nginx' ? 'Nginx' : 'Apache' }}
             <span v-if="!installed(w)" class="muted small">(kurulu değil)</span>
           </button>
@@ -148,6 +149,33 @@ function save() {
       </div>
       <button class="btn" @click="Api.OpenFolder('')"><Icon name="folder" :size="15" /> Aç</button>
     </div>
+
+    <div class="row section-title">
+      <Icon name="star" :size="16" /><h2>Hakkında</h2>
+    </div>
+    <div class="card about-card">
+      <div class="row about-head">
+        <Logo :size="56" />
+        <div class="grow">
+          <h2 class="about-name">PAMPP <span class="badge accent">v{{ s.version }}</span></h2>
+          <p class="muted small">Windows için hafif PHP + Node.js geliştirme ortamı</p>
+          <p class="small" style="margin-top:6px">
+            <a @click="Api.OpenURL('https://github.com/ercanulucandev')"><b>Ercan Ulucan</b></a> tarafından geliştirildi · MIT lisansı
+          </p>
+        </div>
+      </div>
+      <div class="about-links">
+        <button class="about-link" @click="Api.OpenURL('https://github.com/ercanulucandev/pampp')">
+          <Icon name="code" /><span><b>GitHub</b><small>Kaynak kod, yıldız ver ⭐</small></span><Icon name="external" :size="14" />
+        </button>
+        <button class="about-link" @click="Api.OpenURL('https://github.com/ercanulucandev/pampp/issues/new')">
+          <Icon name="alert" /><span><b>Hata bildir / destek al</b><small>GitHub Issues üzerinden</small></span><Icon name="external" :size="14" />
+        </button>
+        <button class="about-link" @click="Api.OpenURL('https://github.com/ercanulucandev/pampp/releases')">
+          <Icon name="download" /><span><b>Sürümler</b><small>Yenilikler ve güncellemeler</small></span><Icon name="external" :size="14" />
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -160,6 +188,17 @@ function save() {
   font: inherit; font-weight: 550; cursor: pointer; display: flex; gap: 5px; align-items: center; }
 .segmented button.active { background: var(--panel); color: var(--text); box-shadow: var(--shadow); }
 .about { margin-top: 14px; }
+.about-card { overflow: hidden; }
+.about-head { padding: 20px; gap: 16px; background: linear-gradient(135deg, var(--accent-soft), var(--panel) 70%); }
+.about-name { font-size: 18px; display: flex; align-items: center; gap: 8px; }
+.about-links { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); }
+.about-link { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: none; border-right: 1px solid var(--border); background: transparent; color: var(--text); font: inherit; cursor: pointer; text-align: left; }
+.about-link:last-child { border-right: none; }
+.about-link:hover { background: var(--panel-2); }
+.about-link > svg:first-child { color: var(--accent-text); flex: none; }
+.about-link > svg:last-child { color: var(--muted); flex: none; }
+.about-link span { flex: 1; display: flex; flex-direction: column; }
+.about-link small { color: var(--muted); font-size: 12px; }
 .section-title { margin: 26px 0 12px; gap: 8px; color: var(--accent-text); }
 .section-title h2 { color: var(--text); }
 .ca-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex: none; }

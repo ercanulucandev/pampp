@@ -88,6 +88,8 @@ export function SetExtension(arg1:string,arg2:string,arg3:boolean):Promise<void>
 
 export function SetRootPassword(arg1:string):Promise<void>;
 
+export function SetShowSystemDBs(arg1:boolean):Promise<void>;
+
 export function SetSitePHP(arg1:string,arg2:string):Promise<void>;
 
 export function StartAll():Promise<void>;

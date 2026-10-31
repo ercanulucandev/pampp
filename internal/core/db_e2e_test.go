@@ -165,6 +165,30 @@ func TestDatabaseManagement(t *testing.T) {
 		t.Fatalf("after restart: %v", err)
 	}
 	must(m.SetRootPassword(""))
+
+	// System databases: hidden in phpMyAdmin by default, toggle keeps the blowfish secret.
+	if m.componentInstalled("phpmyadmin") {
+		pmaConf := func() string {
+			b, _ := os.ReadFile(m.P.Bin("phpmyadmin", "config.inc.php"))
+			return string(b)
+		}
+		must(m.SetShowSystemDBs(false))
+		hidden := pmaConf()
+		if !strings.Contains(hidden, "hide_db") {
+			t.Fatalf("hide_db missing:\n%s", hidden)
+		}
+		must(m.SetShowSystemDBs(true))
+		shown := pmaConf()
+		if strings.Contains(shown, "hide_db") {
+			t.Fatal("hide_db still present after showing system databases")
+		}
+		secret := pmaSecretRe.FindStringSubmatch(hidden)
+		if secret == nil || !strings.Contains(shown, secret[1]) {
+			t.Fatal("blowfish secret changed when toggling")
+		}
+		must(m.SetShowSystemDBs(false))
+		t.Log("phpMyAdmin hide_db toggles and keeps its secret")
+	}
 	m.RunSQL("", "DROP DATABASE shop")
 	m.RunSQL("", "DROP DATABASE shop_copy")
 	t.Log("root password change, graceful shutdown and restart OK")

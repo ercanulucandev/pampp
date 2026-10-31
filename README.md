@@ -6,7 +6,7 @@
 
 <p align="center">
   Windows için hafif ve hızlı PHP + Node.js geliştirme ortamı. Portable ya da kurulumlu.<br>
-  Nginx / Apache · PHP 7.4 – 8.5 · Node.js · MariaDB · phpMyAdmin · Composer · Yerel SSL
+  Apache / Nginx · PHP 7.4 – 8.5 · Node.js · MariaDB · phpMyAdmin · Composer · Yerel SSL
 </p>
 
 <p align="center">
@@ -28,7 +28,7 @@ XAMPP, Laragon, MAMP gibi araçlar ya ağır ya da esnek değil. PAMPP **~14 MB'
 - **Otomatik siteler:** `www/blog` klasörü anında `blog.test` olur. `public/` klasörü varsa (Laravel, Symfony…) kök dizin o olur.
 - **Site başına PHP sürümü:** Tek tıkla değişir, sunucu kesintisiz yeniden yüklenir.
 - **Birden fazla PHP:** 7.4'ten 8.5'e kadar. Her sürüm kendi FastCGI havuzunda çalışır; sadece kullanılanlar başlatılır.
-- **Nginx ↔ Apache:** Ayarlardan geçiş; ikisi de aynı siteleri, PHP havuzlarını ve sertifikayı kullanır.
+- **Apache varsayılan, Nginx isteğe bağlı:** Apache `.htaccess` dosyalarını tam destekler (Laravel, WordPress…). İstersen Ayarlar'dan Nginx'e geç; ikisi de aynı siteleri, PHP havuzlarını ve sertifikayı kullanır.
 - **PHP eklentileri:** Arayüzden aç/kapat, `php.ini`'ye tek tıkla erişim.
 - **Şık yeni site akışı:** Yeni siteyle birlikte hazır bir karşılama sayfası gelir: PHP sürümü, DB bağlantısı, HTTPS durumu, sonraki adımlar.
 
@@ -48,7 +48,7 @@ XAMPP, Laragon, MAMP gibi araçlar ya ağır ya da esnek değil. PAMPP **~14 MB'
 
 ### Genel
 - **Yerel SSL:** PAMPP kendi sertifika otoritesini oluşturur. Tüm siteler `https://` ile kilit simgesiyle açılır. Sertifikalar otomatik yenilenir. Kurulumdan sonra PAMPP sertifikaya güvenmeyi adım adım anlatan bir pencere açar; tek tık yeter, yönetici yetkisi gerekmez.
-- **Tek tıkla güncelleme:** PHP, Node.js, Nginx, Apache, MariaDB, phpMyAdmin ve Composer resmi kaynaklardan kurulur ve güncellenir; ayarlar korunur.
+- **Tek tıkla güncelleme:** PHP, Node.js, Apache, Nginx, MariaDB, phpMyAdmin ve Composer resmi kaynaklardan kurulur ve güncellenir; ayarlar korunur.
 - **Başlangıç sayfası:** `https://localhost` adresinde siteler, sürümler, veritabanı bilgileri ve ilk adımlar.
 - **hosts dosyası:** Otomatik güncellenir (yalnızca o adımda UAC onayı istenir). `.localhost` uzantısı seçilirse hosts dosyasına hiç dokunulmaz.
 - **Sistem tepsisi, canlı loglar, hazır terminal:** Terminalde `php`, `node`, `composer` ve `mariadb` PATH'te gelir.
@@ -65,7 +65,7 @@ XAMPP, Laragon, MAMP gibi araçlar ya ağır ya da esnek değil. PAMPP **~14 MB'
 | Veriler (www, nodejs, veritabanı) | `C:\pampp` içinde; kaldırınca silinmez | exe'nin yanındaki klasörler |
 
 1. [Releases](https://github.com/ercanulucandev/pampp/releases/latest) sayfasından birini indir. Portable sürümü OneDrive veya Masaüstü yerine kendi klasörüne koy (ör. `D:\pampp\`).
-2. Çalıştır ve **Hızlı kurulumu başlat**'a tıkla. Nginx, iki PHP sürümü, MariaDB, phpMyAdmin, Composer ve Node.js LTS kurulur; servisler başlar ve başlangıç sayfası açılır.
+2. Çalıştır ve **Hızlı kurulumu başlat**'a tıkla. Apache, iki PHP sürümü, MariaDB, phpMyAdmin, Composer ve Node.js LTS kurulur; servisler başlar ve başlangıç sayfası açılır.
 3. Ayarlar → SSL → **Güvenilir yap** ile HTTPS uyarılarından kurtul.
 
 > PHP ve Apache için [Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) gerekir. PAMPP eksikse uyarır.
@@ -77,7 +77,7 @@ Installer sürümünde `C:\pampp`, portable sürümde exe'nin yanındaki klasör
 
 ```
 pampp.json      ayarlar
-bin/            php/8.4, node/26, nginx, apache, mariadb, phpmyadmin, composer
+bin/            php/8.4, node/26, apache, nginx, mariadb, phpmyadmin, composer
 etc/            üretilen nginx/apache/mariadb config'leri (her seferinde yeniden yazılır)
 www/            PHP projeleri
 nodejs/         Node.js projeleri

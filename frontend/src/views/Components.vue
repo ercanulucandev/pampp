@@ -6,8 +6,8 @@ import Icon from '../components/Icon.vue'
 onMounted(() => loadCatalog())
 
 const meta = {
-  nginx: { icon: 'server', desc: 'Hafif ve hızlı web sunucusu (önerilen).', key: 'nginx' },
-  apache: { icon: 'server', desc: '.htaccess desteği gereken projeler için.', key: 'apache' },
+  apache: { icon: 'server', desc: 'Varsayılan web sunucusu; .htaccess tam destekli (önerilen).', key: 'apache' },
+  nginx: { icon: 'server', desc: 'İsteğe bağlı, hafif alternatif. .htaccess desteklemez.', key: 'nginx' },
   mariadb: { icon: 'database', desc: 'MySQL uyumlu veritabanı (LTS). Veriler data/ klasöründe kalır.', key: 'mariadb' },
   phpmyadmin: { icon: 'globe', desc: 'Veritabanı yönetim arayüzü.', key: 'phpmyadmin' },
   composer: { icon: 'package', desc: 'PHP paket yöneticisi. Terminalde hazır gelir.', key: 'composer' },
@@ -69,7 +69,7 @@ const webServer = computed(() => store.state.config.webServer)
     </div>
 
     <p class="muted small" style="margin-top:14px">
-      Nginx ↔ Apache geçişini <strong>Ayarlar</strong> sayfasından yapabilirsin; ikisi de aynı siteleri ve PHP havuzlarını kullanır.
+      Apache ↔ Nginx geçişini <strong>Ayarlar</strong> sayfasından yapabilirsin; ikisi de aynı siteleri ve PHP havuzlarını kullanır.
     </p>
   </div>
 </template>

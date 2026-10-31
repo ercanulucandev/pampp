@@ -174,6 +174,10 @@ export function SetRootPassword(arg1) {
   return window['go']['main']['App']['SetRootPassword'](arg1);
 }
 
+export function SetShowSystemDBs(arg1) {
+  return window['go']['main']['App']['SetShowSystemDBs'](arg1);
+}
+
 export function SetSitePHP(arg1, arg2) {
   return window['go']['main']['App']['SetSitePHP'](arg1, arg2);
 }

@@ -109,6 +109,8 @@ func (a *App) OpenInEditor(path string) error            { return a.m.OpenInEdit
 
 // ---- database ----
 
+func (a *App) SetShowSystemDBs(show bool) error { return a.m.SetShowSystemDBs(show) }
+
 func (a *App) DBOverview() (*core.DBOverview, error)              { return a.m.DBOverview() }
 func (a *App) DBTables(db string) ([]core.TableInfo, error)       { return a.m.DBTables(db) }
 func (a *App) DBRows(db, table string) (*core.QueryResult, error) { return a.m.DBRows(db, table) }

@@ -95,3 +95,6 @@ func readVersionFile(dir string) string {
 func writeVersionFile(dir, v string) error {
 	return os.WriteFile(filepath.Join(dir, ".version"), []byte(v), 0o644)
 }
+
+// Version is shown in the app and on the start page; keep it in sync with wails.json.
+const Version = "1.3.0"

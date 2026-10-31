@@ -79,6 +79,9 @@ function toggleAll() {
           <Icon :name="store.busy.all ? 'refresh' : anyRunning ? 'stop' : 'play'" :size="15" :class="{ spin: store.busy.all }" />
           {{ anyRunning ? (allRunning ? 'Tümünü durdur' : 'Durdur') : 'Tümünü başlat' }}
         </button>
+        <button class="credit" title="Hakkında" @click="view = 'settings'">
+          PAMPP v{{ store.state?.version }} · Ercan Ulucan
+        </button>
       </div>
     </aside>
 
@@ -161,6 +164,8 @@ nav { display: flex; flex-direction: column; gap: 2px; }
 .count { font-size: 11.5px; padding: 1px 7px; border-radius: 999px; background: var(--panel-2); color: var(--muted); }
 
 .side-foot { margin-top: auto; padding: 14px 6px 0; border-top: 1px solid var(--border); }
+.credit { display: block; width: 100%; margin-top: 10px; padding: 4px; border: none; background: transparent; color: var(--muted); font: inherit; font-size: 11.5px; cursor: pointer; text-align: center; }
+.credit:hover { color: var(--accent-text); }
 .svc-mini { display: flex; align-items: center; gap: 9px; padding: 5px 4px; font-weight: 500; }
 
 .content { flex: 1; overflow-y: auto; }

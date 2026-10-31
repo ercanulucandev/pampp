@@ -129,6 +129,7 @@ export namespace core {
 	    httpsPort: number;
 	    dbPort: number;
 	    dbPassword: string;
+	    showSystemDbs: boolean;
 	    tld: string;
 	    defaultPhp: string;
 	    phpWorkers: number;
@@ -150,6 +151,7 @@ export namespace core {
 	        this.httpsPort = source["httpsPort"];
 	        this.dbPort = source["dbPort"];
 	        this.dbPassword = source["dbPassword"];
+	        this.showSystemDbs = source["showSystemDbs"];
 	        this.tld = source["tld"];
 	        this.defaultPhp = source["defaultPhp"];
 	        this.phpWorkers = source["phpWorkers"];
@@ -574,6 +576,7 @@ export namespace core {
 	    ssl: SSLState;
 	    startUrl: string;
 	    node: NodeState;
+	    version: string;
 	    installed: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -593,6 +596,7 @@ export namespace core {
 	        this.ssl = this.convertValues(source["ssl"], SSLState);
 	        this.startUrl = source["startUrl"];
 	        this.node = this.convertValues(source["node"], NodeState);
+	        this.version = source["version"];
 	        this.installed = source["installed"];
 	    }
 	

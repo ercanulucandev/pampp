@@ -51,6 +51,7 @@ func (m *Manager) writeStartPage(cfg Config, wc webConfig) error {
 		"DBPort":    cfg.DBPort,
 		"DBPassSet": cfg.DBPassword != "",
 		"Root":      m.P.Root,
+		"Version":   Version,
 	}
 	var sites []startSite
 	for _, s := range m.sites(cfg) {
