@@ -1,0 +1,13 @@
+build/bin
+frontend/dist
+frontend/node_modules
+frontend/package.json.md5
+
+# runtime folders (when PAMPP_HOME points at the repo)
+/bin/
+/etc/
+/data/
+/logs/
+/tmp/
+/www/
+pampp.json

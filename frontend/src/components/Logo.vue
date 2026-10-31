@@ -1,0 +1,25 @@
+<script setup>
+defineProps({ size: { type: Number, default: 30 } })
+// Same artwork as build/appicon.svg (the app/tray icon), cropped to the tile.
+</script>
+
+<template>
+  <svg :width="size" :height="size" viewBox="48 48 928 928" aria-label="PAMPP">
+    <defs>
+      <linearGradient id="pampp-bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#6366f1" />
+        <stop offset="0.55" stop-color="#8b5cf6" />
+        <stop offset="1" stop-color="#c026d3" />
+      </linearGradient>
+      <linearGradient id="pampp-bolt" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fde68a" />
+        <stop offset="1" stop-color="#f59e0b" />
+      </linearGradient>
+    </defs>
+    <rect x="48" y="48" width="928" height="928" rx="232" fill="url(#pampp-bg)" />
+    <path d="M336 776 V264 H552 A176 176 0 0 1 552 616 H336" fill="none" stroke="#fff" stroke-width="120"
+          stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M562 352 L478 458 H530 L506 530 L592 418 H540 Z" fill="url(#pampp-bolt)" stroke="url(#pampp-bolt)"
+          stroke-width="12" stroke-linejoin="round" />
+  </svg>
+</template>
